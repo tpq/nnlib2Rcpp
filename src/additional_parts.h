@@ -6,6 +6,7 @@ using namespace nnlib2;
 
 #include "additional_parts_other.h"
 #include "additional_parts_softmax.h"
+#include "additional_parts_transforms.h"
 
 //--------------------------------------------------------------------------------------------
 // minimal examples of pe and layer definitions:

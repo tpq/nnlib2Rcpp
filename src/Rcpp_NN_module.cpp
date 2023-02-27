@@ -19,6 +19,7 @@
 #include "nn_mam.h"
 #include "spare_parts.h"
 #include "additional_parts.h"		// header for user-defined parts (components etc)
+#include "additional_parts_transforms.h"
 
 using namespace nnlib2;
 
@@ -371,6 +372,57 @@ public:
 	bool add_layer_0xp(string name, int size)
 	{
 		return add_layer_1xp(name,size,DATA_MIN);
+	}
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
+	bool add_compute_layer(
+			int size,
+			string activation = "linear",
+			bool output_layer = false,
+			float learning_rate = 0.6,
+			bool use_bias = true,
+			int init_bias_min = -1,
+			int init_bias_max = 1)
+	{
+		m_nn.change_is_ready_flag(true);
+		TEXTOUT << "Adding layer of generic PEs to topology.\n";
+
+		// the "v2" inherits methods from VNN's layer but adds keras-like arguments for activation
+		bp_comput_layer_v2 PTR p = new bp_comput_layer_v2;
+
+		// these are arguments implemented in "v2" compute layer
+		p->set_activation(activation);
+		p->set_output_layer(output_layer);
+		p->set_use_bias(use_bias);
+
+		// these are arguments implemented in parent class
+		string layer_name = activation + "-hidden";
+		if(output_layer) layer_name = activation + "-output";
+		p->setup(layer_name,size);
+		p->randomize_biases(init_bias_min,init_bias_max);
+		DATA bp_learnrate = learning_rate;
+		p->set_learning_rate(bp_learnrate);
+
+		// display layer properties
+		TEXTOUT << "(This " << layer_name << " layer uses learning rate = " << bp_learnrate << ")\n";
+		TEXTOUT << "(The layer has a dimension of " << size << " with " << activation << " activation)\n";
+		if(!use_bias) TEXTOUT << "(Bias is disabled during recall)\n";
+
+		if(p!=NULL)
+		{
+			if(m_nn.add_layer(p))
+			{
+				TEXTOUT << "Topology changed:\n";
+				outline();
+				return true;
+			}
+			warning("Deleting orphan (?) layer");
+			delete p;
+		}
+		m_nn.change_is_ready_flag(false);
+		TEXTOUT << "Note: Adding layer failed.\n";
+		return false;
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1066,6 +1118,7 @@ RCPP_MODULE(class_NN) {
      .method( "add_R_ignoring", 						&NN::add_R_ignoring,         										"Append R function, ignoring its results" )
      .method( "add_layer",				(bool (NN::*)(string,int))(&NN::add_layer_0xp), 									"Append layer component to topology" )
      .method( "add_layer",				(bool (NN::*)(string,int,DATA))(&NN::add_layer_1xp),								"Append layer component to topology" )
+     .method( "add_compute_layer",						&NN::add_compute_layer,												"Append layer component to topology" )
      .method( "add_connection_set",		(bool (NN::*)(string))(&NN::add_connection_set_0xp),  								"Append set of connections to topology (disconnected and empty of connections)" )
      .method( "add_connection_set",		(bool (NN::*)(string,DATA))(&NN::add_connection_set_1xp),  							"Append set of connections to topology (disconnected and empty of connections)" )
      .method( "connect_layers_at",		(bool (NN::*)(int,int,string))(&NN::connect_layers_at_0xp),							"Add connection set for two layers, no connections added" )
