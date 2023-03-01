@@ -40,6 +40,16 @@ public:
 				if(use_bias) x = x + p.bias; // add bias is optional
 				if(activation == "linear"){ // different recall formula for each activation
 					p.output = (DATA)1*x;
+				}else if(activation == "relu"){
+					if(x > 0){
+						p.output = (DATA)1*x;
+					}else{
+						p.output = (DATA)1*0;
+					}
+				}else if(activation == "sigmoid"){
+					p.output = (DATA)1 / (1 + exp(-x));
+				}else if(activation == "tanh"){
+					p.output = (DATA)1*tanh(x);
 				}else{
 					error(NN_ARITHM_ERR, "Activation not recognised.");
 				}
@@ -60,6 +70,16 @@ public:
 				float h_prime_of_current; // compute derivative of current value
 				if(activation == "linear"){ // different derivative for each activation
 					h_prime_of_current = 1;
+				}else if(activation == "relu"){
+					if(current > 0){
+						h_prime_of_current = 1;
+					}else{
+						h_prime_of_current = 0;
+					}
+				}else if(activation == "sigmoid"){
+					h_prime_of_current = current * (1 - current);
+				}else if(activation == "tanh"){
+					h_prime_of_current = 1 - pow(tanh(current), 2);
 				}else{
 					error(NN_ARITHM_ERR, "Activation not recognised.");
 				}
