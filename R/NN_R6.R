@@ -1,3 +1,9 @@
+##############################################################
+### R6 class to wrap C++ NN class and let user add R methods
+### -- C++ NN methods exposed here
+### -- new R methods found in additional_parts.R
+##############################################################
+
 NN_R <- R6::R6Class(
 	public = list(
 
@@ -8,7 +14,7 @@ NN_R <- R6::R6Class(
 		},
 
 		##############################################################
-		### METHODS THAT ADD LAYERS
+		### EXPOSE C++ NN METHODS THAT ADD LAYERS
 		##############################################################
 
 		add_layer = function(name, size, optional_parameter = NA){
@@ -28,7 +34,7 @@ NN_R <- R6::R6Class(
 		},
 
 		##############################################################
-		### METHODS THAT MANAGE CONNECTIONS
+		### EXPOSE C++ NN METHODS THAT MANAGE CONNECTIONS
 		##############################################################
 
 		add_connection_set = function(name, optional_parameter = NA){
@@ -44,7 +50,7 @@ NN_R <- R6::R6Class(
 		},
 
 		##############################################################
-		### GETTERS AND SETTERS
+		### EXPOSE C++ NN GETTERS AND SETTERS
 		##############################################################
 
 		# expose input / output getters and setters
@@ -71,8 +77,12 @@ NN_R <- R6::R6Class(
 		set_biases_at = function(pos, data_in) self$Cpp$set_biases_at(pos, data_in),
 		set_bias_at = function(pos, pe, value) self$Cpp$set_bias_at(pos, pe, value),
 
+		# expose misc getters and setters
+		get_misc_values_at = function(pos) self$Cpp$get_misc_values_at(pos),
+		set_misc_values_at = function(pos, data_in) self$Cpp$set_misc_values_at(pos, data_in),
+
 		##############################################################
-		### PRINT METHODS
+		### EXPOSE C++ NN PRINT METHODS
 		##############################################################
 
 		# expose print methods
