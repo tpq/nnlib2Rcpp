@@ -1,3 +1,9 @@
+##############################################################
+### This example builds on the simple NN_R class example to
+### show how computed differentials can be passed between
+### discrete models to enable multi-task learning.
+##############################################################
+
 library(nnlib2Rcpp)
 
 # scale data from 0 to 1 range

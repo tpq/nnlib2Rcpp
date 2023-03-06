@@ -1,3 +1,8 @@
+##############################################################
+### This example introduces the NN_R class object to show how
+### it can be used similar to the C++ class.
+##############################################################
+
 library(nnlib2Rcpp)
 
 # scale data from 0 to 1 range
